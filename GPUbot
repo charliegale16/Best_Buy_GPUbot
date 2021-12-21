@@ -1,0 +1,175 @@
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.select import Select
+from selenium.webdriver.common.proxy import Proxy, ProxyType
+import info
+#NOTES------------------------------
+#1. Before start uncomment the enable text message function
+#2. uncomment the place order
+#proxy------------------------------
+
+#proxy = Proxy()
+#proxy.proxy_type = ProxyType.MANUAL
+#proxy.http_proxy = proxy_ip_port
+#proxy.ssl_proxy = proxy_ip_port
+
+#capabilities = webdriver.DesiredCapabilities.Chrome
+#proxy.add_to_capabilities(capabilities)
+
+
+#bot--------------------------------
+import time
+PATH = "C:\Program Files (x86)\chromedriver.exe"
+
+driver = webdriver.Chrome(PATH)
+
+TESTITEM= "https://www.bestbuy.com/site/ibuypower-tracemr-gaming-desktop-intel-i7-11700f-16gb-memory-nvidia-rtx-3060ti-8gb-480gb-ssd-1tb-hdd/6483421.p?skuId=6483421"#$3.79
+G3060= "https://www.bestbuy.com/site/nvidia-geforce-rtx-3060-ti-8gb-gddr6-pci-express-4-0-graphics-card-steel-and-black/6439402.p?skuId=6439402" #$399.99
+G3070= "https://www.bestbuy.com/site/nvidia-geforce-rtx-3070-8gb-gddr6-pci-express-4-0-graphics-card-dark-platinum-and-black/6429442.p?skuId=6429442"
+G3070Ti= "https://www.bestbuy.com/site/nvidia-geforce-rtx-3070-ti-8gb-gddr6x-pci-express-4-0-graphics-card-dark-platinum-and-black/6465789.p?skuId=6465789" #599.99
+G3080= "https://www.bestbuy.com/site/nvidia-geforce-rtx-3080-10gb-gddr6x-pci-express-4-0-graphics-card-titanium-and-black/6429440.p?skuId=6429440" #699.99
+driver.get(TESTITEM)
+
+isComplete = False
+
+while not isComplete:
+    # find add to cart button
+    try:
+        atcBtn = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, ".add-to-cart-button"))
+        )
+    except:
+        driver.refresh()
+        continue
+
+    print("Add to cart button found")
+
+    try:
+        # add to cart
+        atcBtn.click()
+
+
+        # go to cart and begin checkout as guest---------------------------------------------
+        driver.get("https://www.bestbuy.com/cart")
+
+        checkoutBtn = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "checkout-buttons__checkout"))
+        )
+        checkoutBtn.click()
+        print("Successfully added to cart - beginning check out")
+
+        # account sign in ---------------------------------------------------------------
+        # signInBtn = WebDriverWait(driver, 10).until(
+        #   EC.presence_of_element_located((By.CLASS_NAME, "cia-form__controls "))
+        # )
+        # signInBtn.click()
+        # print("Signing in")
+
+        # guest sign in----------------------------------------------------------------------
+        guestBtn = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "cia-guest-content__continue "))
+        )
+        guestBtn.click()
+        print("Signing in as Guest")
+
+        # fill in email and password---------------------------------------------------------
+        emailField = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "user.emailAddress"))
+        )
+        emailField.send_keys(info.email)
+
+        pField = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "user.phone"))
+        )
+        pField.send_keys(info.phone)
+
+        # enabling text updates--------------------------------------------------------------
+        textUpdate = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "text-updates"))
+       )
+        textUpdate.click()
+        print("Text updates enabled")
+
+        # click continue to payment information button---------------------------------------
+        contBtn = WebDriverWait(driver, 10).until(
+           EC.presence_of_element_located((By.CLASS_NAME, "button--continue "))
+         )
+        contBtn.click()
+        print("Continuing to Payment information page")
+
+        #payment information------------------------------------------------------------------
+
+        paymentInfo = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "optimized-cc-card-number"))
+        )
+        paymentInfo.send_keys(info.card)
+
+        mm = driver.find_element_by_name("expiration-month")
+        mmDate = Select(mm)
+        mmDate.select_by_index(3)
+
+        yy= driver.find_element_by_name("expiration-year")
+        yyDate = Select(yy)
+        yyDate.select_by_index(3)
+
+        cvvInfo = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "credit-card-cvv"))
+        )
+        cvvInfo.send_keys(info.cvv)
+
+        #billing address---------------------------------------------------------------------
+
+        fName = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "payment.billingAddress.firstName"))
+        )
+        fName.send_keys(info.fname)
+
+        lName = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "payment.billingAddress.lastName"))
+        )
+        lName.send_keys(info.lname)
+
+        autosugg = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "autocomplete__toggle"))
+        )
+        autosugg.click()
+
+        addy = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "payment.billingAddress.street"))
+        )
+        addy.send_keys(info.addy)
+
+        city = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "payment.billingAddress.city"))
+        )
+        city.send_keys(info.city)
+
+        state = driver.find_element_by_name("state")
+        caState = Select(state)
+        caState.select_by_index(9)
+
+        zip = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "payment.billingAddress.zipcode"))
+        )
+        zip.send_keys(info.zip)
+
+
+
+        # place order-----------------------------------------------------------------------
+        placeOrderBtn = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "payment__order-summary "))
+        )
+        #placeOrderBtn.click()
+        print("Attempting order placement")
+
+        isComplete = True
+    except:
+        # make sure this link is the same as the link passed to driver.get() before looping
+        driver.get(G3060)
+        print("Error - restarting bot")
+        continue
+
+print("Order successfully placed")
