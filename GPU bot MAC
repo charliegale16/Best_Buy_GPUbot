@@ -25,8 +25,8 @@ import os
 #Twilio INFO------------------------
 toNumber = '+17816262856'
 fromNumber = '+17692106190'
-accountSid = 'ACb42e457ca0701ae6e8565aa21ee696dc'
-authToken = 'bfa68a1795e1c522b4b69e29477db8a1'
+accountSid = 'ACCOUNT SID'
+authToken = 'AUTH TOKEN'
 client = Client(accountSid, authToken)
 
 #bot--------------------------------
